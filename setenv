@@ -1,0 +1,107 @@
+#!/bin/bash
+# usage:  setenv env
+# env 有 dev_env test_env uat_env prod_env 分别对应不同的环境
+# set -x
+cd ..
+editFile="./Project/Sources/HsGlobalDefine.h"
+
+dev_env=DEV_ON
+test_env=TESTENV_ON
+uat_env=UAT_ON
+prod_env=PROD_ENV
+
+# param_pattern="e:f:"
+#
+# while getopts $param_pattern optname
+# do
+#   case $optname in
+#     "e")
+#     env=$OPTARG
+#     ;;
+#     "f")
+#     fastlane_name=$OPTARG
+#     ;;
+#   esac
+# done
+
+# echo -n "Choose environment you want to build: "
+# echo -n $'\n'
+# PS3=$'\n ::  Please choose a VALID option : '
+# options=("Test Environmentn '\n'"  "Development Environment" "UAT Environment" "Production Environment")
+# select opt in Test Development UAT Producation
+# do
+#   case $opt in
+#     "Test")
+#     echo "Build app for $opt"
+#     env=test_env
+#     break
+#     ;;
+#     "Development")
+#     echo "Build app for $opt"
+#     env=dev_env
+#     break
+#     ;;
+#     "UAT")
+#     echo "Build app for $opt"
+#     env=uat_env
+#     break
+#     ;;
+#     "Production")
+#     echo "Build app for $opt"
+#     env=prod_env
+#     break
+#     ;;
+#   esac
+#   # echo "Build app for $opt"
+# done
+
+env=$1
+echo -n "change environment to $env"
+#先清除环境变量
+clear_env_variables(){
+  sed -i -e '/'$dev_env'/d' $editFile
+  sed -i -e '/'$uat_env'/d' $editFile
+  sed -i -e '/'$test_env'/d' $editFile
+}
+
+if [[ "$env" = "test_env" ]]; then
+  #statements
+  clear_env_variables
+  echo '#define '$test_env >>$editFile
+  echo '//#define '$dev_env >>$editFile
+  echo '//#define '$uat_env >>$editFile
+elif [[ "$env" = "uat_env" ]]; then
+  #statements
+  clear_env_variables
+  echo '#define '$uat_env >>$editFile
+  echo '//#define '$test_env >>$editFile
+  echo '//#define '$dev_env >>$editFile
+
+elif [[ "$env" = "dev_env" ]]; then
+  #statements
+  clear_env_variables
+  echo '#define '$dev_env >>$editFile
+  echo '//#define '$uat_env >>$editFile
+  echo '//#define '$test_env >>$editFile
+elif [[ "$env" = "prod_env" ]]; then
+  #prod environment
+  clear_env_variables
+  echo '//#define '$uat_env >>$editFile
+  echo '//#define '$test_env >>$editFile
+  echo '//#define '$dev_env >>$editFile
+else
+
+  #statements
+  echo "error enviroment param; the env param should only be dev_env, uat_env, test_env, prod_env"
+  exit 2
+fi
+  echo -n
+  # pwd
+  # echo $env>>../build/ipa-build/enviroment
+# if [[ "$fastlane_name" != "" ]]; then
+#   #statements
+#   fastlane $fastlane_name
+# else
+#   fastlane
+# fi
+# set +x
